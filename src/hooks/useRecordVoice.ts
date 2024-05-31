@@ -39,6 +39,7 @@ export const useRecordVoice = () => {
       }).then((res) => res.json());
       const { text } = response;
       setText(text);
+      return text;
     } catch (error) {
       console.log(error);
     }
@@ -73,5 +74,5 @@ export const useRecordVoice = () => {
     }
   }, []);
 
-  return { recording, startRecording, stopRecording, text };
+  return { recording, startRecording, stopRecording, text, getText };
 };

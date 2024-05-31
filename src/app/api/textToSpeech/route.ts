@@ -2,6 +2,9 @@ import { ElevenLabsClient } from "elevenlabs";
 import { createWriteStream } from "fs";
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
+
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 
 const client = new ElevenLabsClient({
@@ -10,6 +13,7 @@ const client = new ElevenLabsClient({
 
 export async function POST(req: Request) {
   const { text } = await req.json();
+  console.log("Text to convert to speech:", text);
   try {
     const audio = await client.generate({
       voice: "Emily",

@@ -1,13 +1,29 @@
 "use client";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const usePlayVoice = () => {
-  const [audio] = useState(new Audio());
-  const [audioSrc, setAudioSrc] = useState<string | null>(null);
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
 
-  const play = () => {
-    if (audioSrc) {
-      audio.src = audioSrc;
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // 仅在客户端环境中执行
+      const audioElement = new Audio('');
+      setAudio(audioElement);
+      // 清理函数，防止组件卸载时出现内存泄漏
+      return () => {
+        audioElement.pause();
+        setAudio(null);
+      };
+    }
+  }, []);
+
+  const play = (url: string) => {
+    const audio = new Audio();
+    console.log('22audioSrc', url);
+    console.log('audio', audio);
+    if (url) {
+      audio.src = url;
+      console.log('33audioSrc', url);
       audio.play();
     }
   };
@@ -21,9 +37,9 @@ export const usePlayVoice = () => {
       body: JSON.stringify({ text }),
     });
     const data = await res.blob();
+    console.log('audio data===', data);
     const url = URL.createObjectURL(data);
-    setAudioSrc(url);
-    play();
+    play(url);
   };
 
 
