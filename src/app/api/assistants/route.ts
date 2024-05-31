@@ -22,7 +22,6 @@ export async function POST(req: Request) {
     threadId: string | null;
     message: string;
   } = await req.json();
-  console.log('threadId', input.threadId);
   // Create a thread if needed
   const threadId = input.threadId ?? (await openai.beta.threads.create({})).id;
 

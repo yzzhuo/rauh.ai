@@ -19,11 +19,8 @@ export const usePlayVoice = () => {
 
   const play = (url: string) => {
     const audio = new Audio();
-    console.log('22audioSrc', url);
-    console.log('audio', audio);
     if (url) {
       audio.src = url;
-      console.log('33audioSrc', url);
       audio.play();
     }
   };
@@ -37,7 +34,6 @@ export const usePlayVoice = () => {
       body: JSON.stringify({ text }),
     });
     const data = await res.blob();
-    console.log('audio data===', data);
     const url = URL.createObjectURL(data);
     play(url);
   };

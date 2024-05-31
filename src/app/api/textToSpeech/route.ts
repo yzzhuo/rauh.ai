@@ -13,7 +13,6 @@ const client = new ElevenLabsClient({
 
 export async function POST(req: Request) {
   const { text } = await req.json();
-  console.log("Text to convert to speech:", text);
   try {
     const audio = await client.generate({
       voice: "Emily",

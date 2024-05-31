@@ -43,7 +43,6 @@ export const useVoiceChat = () => {
 
     mediaRecorder.onstop = () => {
       const audioBlob = new Blob(chunks.current, { type: "audio/wav" });
-      console.log(audioBlob, 'audioBlob')
       blobToBase64(audioBlob, getText);
     };
 
@@ -236,6 +235,7 @@ export const useVoiceChat = () => {
   // handleRunCompleted - re-enable the input form
   const handleRunCompleted = (event: AssistantStreamEvent.ThreadRunCompleted) => {
     setInputDisabled(false);
+    console.log('completed', event);
     const lastMessage = messagesRef.current[messagesRef.current.length - 1];
     playSpeech(lastMessage.text);
   };
