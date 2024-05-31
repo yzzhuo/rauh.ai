@@ -12,6 +12,7 @@ export type MessageProps = {
   text: string;
 };
 
+const GREETING = "Welcome! Let’s take a moment to center ourselves and focus on the present. How are you feeling right now?"
 const functionCallHandler = async (toolCall: any) => {
   // implement your own logic here
   return "Function call result";
@@ -89,7 +90,6 @@ export const useVoiceChat = () => {
   const [messages, setMessages] = useState<MessageProps[]>([]);
   const [inputDisabled, setInputDisabled] = useState(false);
   const [threadId, setThreadId] = useState("");
-
   // automatically scroll to bottom of chat
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const scrollToBottom = () => {
@@ -104,6 +104,12 @@ export const useVoiceChat = () => {
           .getUserMedia({ audio: true })
           .then(initialMediaRecorder);
       }
+      // play the voice
+      playSpeech(GREETING);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { role: "assistant", text: GREETING },
+      ]);
     }, []);
     
   useEffect(() => {
@@ -298,11 +304,10 @@ export const useVoiceChat = () => {
   }
   return { recording, startRecording, stopRecording,
       messages,
-      status,
       input,
       setInput,
       handleSubmit,
       inputDisabled,
-      stop
+      stop: () => {}
    };
 };
