@@ -5,7 +5,8 @@ import { Button, Flex, Text } from '@radix-ui/themes';
 export default function Home() {
 
   const handleClickStart = () => {
-    console.log('Start');
+    // navigate to the chat page
+    window.location.href = '/chat';
   };
   return (
     <main className="flex h-screen overflow-hidden flex-col items-center justify-center p-24">
