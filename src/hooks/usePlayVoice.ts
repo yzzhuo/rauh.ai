@@ -32,6 +32,7 @@ export const usePlayVoice = () => {
   };
 
   const playSpeech = async (text: string) => {
+    if (process.env.NEXT_PUBLIC_NO_VOICE === 'true') return;
     const res = await fetch('/api/textToSpeech', {
       method: 'POST',
       headers: {

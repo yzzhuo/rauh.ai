@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
-import { IconButton, Flex, Text } from "@radix-ui/themes";
+import { IconButton, Flex, Text, Button } from "@radix-ui/themes";
+import { ReaderIcon, ArrowUpIcon } from '@radix-ui/react-icons'
 import { MessageProps, useVoiceChat } from "../../hooks/useVoiceChat";
 import { useEffect, useRef, useState } from "react";
 
@@ -23,6 +24,7 @@ export default function Home() {
     setInput,
   } = useVoiceChat();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // 处理音频相关逻辑，主要是自动开启/停止录音
   const [volume, setVolume] = useState(0);
@@ -116,11 +118,16 @@ export default function Home() {
           </IconButton>
         </div>
       </div>
+      {!isSidebarOpen &&<IconButton size={"3"} variant="outline" className="m-4" onClick={() => setIsSidebarOpen(true)}>
+          <ReaderIcon width="24" height="24" />
+        </IconButton>
+        }
+      {isSidebarOpen && <aside className="w-1/4 bg-gray-100 rounded-md m-4 flex flex-col">
+        <header className="px-4 py-4 w-full border-solid border-b w-9/10 border-gray-200">
+          <h4 className="font-bold text-xl">Transcript</h4>
+        </header>
 
-      <aside className="w-1/4 bg-gray-100 rounded-md m-4">
-
-
-        <div className="p-4">
+        <div className="p-4 overflow-y-auto flex-1">
           <div className="flex flex-col w-full max-w-md mx-auto justify-start">
             {messages.map((m: MessageProps, index) => (
               <div key={index} className="whitespace-pre-wrap">
@@ -134,30 +141,17 @@ export default function Home() {
             {inputDisabled && (
               <div className="w-full h-8 max-w-md p-2 mb-8 bg-gray-300 rounded-lg dark:bg-gray-600 animate-pulse" />
             )}
-
-            <form onSubmit={handleSubmit}>
-              <input
-                ref={inputRef}
-                disabled={inputDisabled}
-                className="fixed  p-2 mb-8 border border-gray-300 rounded  bottom-14 ax-w-md"
-                value={input}
-                placeholder="What is the temperature in the living room?"
-                onChange={(e) => setInput(e.target.value)}
-              />
-            </form>
-
-            <button
-              className="fixed bottom-0 p-2 mb-8 text-white bg-red-500 rounded-lg"
-              onClick={() => {
-
-              }}
-            >
-              Stop
-            </button>
           </div>
         </div>
+        <form className='w-full flex h-[64px] gap-2 p-4 border-solid border-t-2' onSubmit={handleSubmit}>
+          <input onChange={(e) => setInput(e.target.value)} value={input} className='bg-white flex-1 text-sm outline-none p-2' placeholder='Send a message...' />
+          <Button type="submit" className="">
+            <span className='font-semibold text-sm'>Send</span>
+          </Button>  
+          </form>
         {/* <HumeAI /> */}
       </aside>
+      }
     </main>
   );
 }
