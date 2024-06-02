@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef, use } from "react";
+import { useEffect, useState, useRef } from "react";
 import { blobToBase64 } from "@/utils/blobToBase64";
 import { createMediaStream } from "@/utils/createMediaStream";
 import { usePlayVoice } from "./usePlayVoice"; 
@@ -13,10 +13,7 @@ export type MessageProps = {
 };
 
 const GREETING = "Welcome! Let’s take a moment to center ourselves and focus on the present. How are you feeling right now?"
-const functionCallHandler = async (toolCall: any) => {
-  // implement your own logic here
-  return "Function call result";
-}
+
 
 export const useVoiceChat = () => {
   const [audioText, setAudioText] = useState("");
@@ -187,7 +184,6 @@ export const useVoiceChat = () => {
   };
 
   /* Stream Event Handlers */
-
   // textCreated - create new assistant message
   const handleTextCreated = () => {
     appendMessage("assistant", "");
@@ -216,6 +212,28 @@ export const useVoiceChat = () => {
     appendToLastMessage(delta.code_interpreter.input);
   };
 
+  const functionCallHandler = async (call: any) => {
+    console.log('call====', call);
+    // implement your own logic here
+    if (call?.function?.name == "play_voice") {
+      const args = JSON.parse(call.function.arguments);
+      await appendMessage("assistant", args.text);
+      await playSpeech(args.text);
+      return JSON.stringify({
+        success: true,
+      }) 
+    }
+    // else if (call?.function?.name == "setTimer") {
+    //   // set a timer with promise
+    //   const args = JSON.parse(call.function.arguments);
+    //   setTimeout(() => {
+    //     console.log('timer done');
+    //   }, args.duration);
+    //   return 'ok';
+    // }
+    return;
+  }
+
   // handleRequiresAction - handle function call
   const handleRequiresAction = async (
     event: AssistantStreamEvent.ThreadRunRequiresAction
@@ -223,21 +241,16 @@ export const useVoiceChat = () => {
     const runId = event.data.id;
     const toolCalls = event.data.required_action.submit_tool_outputs.tool_calls;
     // loop over tool calls and call function handler
-    const toolCallOutputs = await Promise.all(
-      toolCalls.map(async (toolCall: any) => {
-        const result = await functionCallHandler(toolCall);
-        return { output: result, tool_call_id: toolCall.id };
-      })
-    );
+    const toolCallOutputs = [];
+    for (const toolCall of toolCalls) {
+      const result = await functionCallHandler(toolCall);
+      console.log('result====', result);
+      toolCallOutputs.push({ output: result, tool_call_id: toolCall.id });
+    }
     setInputDisabled(true);
     submitActionResult(runId, toolCallOutputs);
   };
 
-  const playReplySpeech = () => {
-    // const lastMessage = messages[messages.length - 1];
-    // playSpeech(lastMessage.text);
-   
-  }
   // handleRunCompleted - re-enable the input form
   const handleRunCompleted = (event: AssistantStreamEvent.ThreadRunCompleted) => {
     setInputDisabled(false);

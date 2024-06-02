@@ -17,12 +17,18 @@ export const usePlayVoice = () => {
     }
   }, []);
 
-  const play = (url: string) => {
-    const audio = new Audio();
-    if (url) {
-      audio.src = url;
-      audio.play();
-    }
+  const play = async (url: string) => {
+    // finish when audio finish playing
+    return new Promise((resolve) => {
+      const audio = new Audio();
+      if (url) {
+        audio.src = url;
+        audio.play();
+      }
+      audio.onended = () => {
+        resolve(true);
+      };
+    });
   };
 
   const playSpeech = async (text: string) => {
@@ -35,7 +41,7 @@ export const usePlayVoice = () => {
     });
     const data = await res.blob();
     const url = URL.createObjectURL(data);
-    play(url);
+    await play(url);
   };
 
 

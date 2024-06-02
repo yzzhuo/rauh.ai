@@ -115,7 +115,9 @@ export default function Home() {
 
             <button
               className="fixed bottom-0 w-full max-w-md p-2 mb-8 text-white bg-red-500 rounded-lg"
-              onClick={stop}
+              onClick={() =>{
+                
+              }}
             >
               Stop
             </button>

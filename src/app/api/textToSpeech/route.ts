@@ -15,28 +15,26 @@ const client = new ElevenLabsClient({
 
 export async function POST(req: Request) {
   const { text } = await req.json();
-  const filePath = "tmp/output.wav";
-
-  try {
-    // const audio = await client.generate({
-    //   voice: "Emily",
-    //   model_id: "eleven_turbo_v2",
-    //   text,
-    // });
-    // return new Response(audio as any, {
-    //   headers: { "Content-Type": "audio/mpeg" }
-    // });
+  if (process.env.TEXT_TO_SPEECH_MDEO === "openai") {
     const mp3 = await openai.audio.speech.create({
       model: "tts-1",
       voice: "nova",
       input: text,
     });
     const buffer = Buffer.from(await mp3.arrayBuffer());
-    // return audio 
     return new Response(buffer, {
       headers: { "Content-Type": "audio/mpeg" },
     });
-   
+  }
+  try {
+    const audio = await client.generate({
+      voice: "Emily",
+      model_id: "eleven_turbo_v2",
+      text,
+    });
+    return new Response(audio as any, {
+      headers: { "Content-Type": "audio/mpeg" }
+    });
   } catch (error) {
     console.error("Error processing audio:", error);
     return NextResponse.error();
