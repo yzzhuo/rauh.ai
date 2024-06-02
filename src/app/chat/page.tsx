@@ -5,7 +5,7 @@ import { ReaderIcon, ArrowUpIcon } from '@radix-ui/react-icons'
 import { MessageProps, useVoiceChat } from "../../hooks/useVoiceChat";
 import { useEffect, useRef, useState } from "react";
 
-import { Mic, X } from "lucide-react";
+import { Mic, X, PanelRightClose, PanelLeftClose } from "lucide-react";
 import { Waveform } from "../components/wave-shape";
 import { BackgroundBeams } from "../components/beams-bg";
 import HumeAI from "../hume/page";
@@ -124,13 +124,17 @@ export default function Home() {
           </IconButton>
         </div>
       </div>
-      {!isSidebarOpen && <IconButton size={"3"} variant="outline" className="m-4" onClick={() => setIsSidebarOpen(true)}>
-        <ReaderIcon width="24" height="24" />
-      </IconButton>
+      {!isSidebarOpen &&
+        <IconButton size={"3"} variant="ghost" className="m-4" onClick={() => setIsSidebarOpen(true)}>
+          <PanelLeftClose width="24" height="24" />
+        </IconButton>
       }
       {isSidebarOpen && <aside className="w-1/4 bg-gray-100 rounded-md m-4 flex flex-col">
-
-
+        {isSidebarOpen &&
+          <IconButton size={"3"} variant="ghost" className="m-2" onClick={() => setIsSidebarOpen(false)}>
+            <PanelRightClose width="24" height="24" />
+          </IconButton>
+        }
         <div className="p-4 overflow-y-auto flex-1">
           <div className="flex flex-col w-full max-w-md mx-auto justify-start">
             {messages.map((m: MessageProps, index) => (
