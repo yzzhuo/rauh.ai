@@ -5,7 +5,7 @@ export default function SmileyFace() {
             <div className="w-40 h-40 relative opacity-80">
                 <div className="absolute top-8 left-8 w-6 h-6 bg-white rounded-full animate-blink"></div>
                 <div className="absolute top-8 right-8 w-6 h-6 bg-white rounded-full animate-blink"></div>
-                <div className="absolute bottom-6 left-10 right-10 h-5 bg-white rounded-full"></div>
+                {/* <div className="absolute bottom-6 left-10 right-10 h-5 bg-white rounded-full"></div> */}
             </div>
         </div>
     );

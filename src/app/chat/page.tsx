@@ -78,6 +78,12 @@ export default function Home() {
     }
   };
 
+  // Click the cloes button
+  const handleClickClose = () => {
+    // navigate to the home page
+    window.location.href = '/';
+  };
+
   return (
     <main className="flex h-screen">
       <div className="flex flex-auto overflow-hidden flex-col items-center justify-between p-24">
@@ -112,20 +118,18 @@ export default function Home() {
             variant="soft"
             color="red"
             size="4"
-          // onClick={handlePlay}
+            onClick={handleClickClose}
           >
             <X width="24" height="24" />
           </IconButton>
         </div>
       </div>
-      {!isSidebarOpen &&<IconButton size={"3"} variant="outline" className="m-4" onClick={() => setIsSidebarOpen(true)}>
-          <ReaderIcon width="24" height="24" />
-        </IconButton>
-        }
+      {!isSidebarOpen && <IconButton size={"3"} variant="outline" className="m-4" onClick={() => setIsSidebarOpen(true)}>
+        <ReaderIcon width="24" height="24" />
+      </IconButton>
+      }
       {isSidebarOpen && <aside className="w-1/4 bg-gray-100 rounded-md m-4 flex flex-col">
-        <header className="px-4 py-4 w-full border-solid border-b w-9/10 border-gray-200">
-          <h4 className="font-bold text-xl">Transcript</h4>
-        </header>
+
 
         <div className="p-4 overflow-y-auto flex-1">
           <div className="flex flex-col w-full max-w-md mx-auto justify-start">
@@ -147,8 +151,8 @@ export default function Home() {
           <input onChange={(e) => setInput(e.target.value)} value={input} className='bg-white flex-1 text-sm outline-none p-2' placeholder='Send a message...' />
           <Button type="submit" className="">
             <span className='font-semibold text-sm'>Send</span>
-          </Button>  
-          </form>
+          </Button>
+        </form>
         {/* <HumeAI /> */}
       </aside>
       }
