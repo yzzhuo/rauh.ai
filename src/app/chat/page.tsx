@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { IconButton, Flex, Text } from "@radix-ui/themes";
 import { MessageProps, useVoiceChat } from "../../hooks/useVoiceChat";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Mic, X } from "lucide-react";
 import { Waveform } from "../components/wave-shape";
@@ -24,6 +24,49 @@ export default function Home() {
   } = useVoiceChat();
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // 处理音频相关逻辑，主要是自动开启/停止录音
+  const [volume, setVolume] = useState(0);
+
+  useEffect(() => {
+    const audioContext = new AudioContext();
+    const analyser = audioContext.createAnalyser();
+    const data = new Uint8Array(analyser.frequencyBinCount);
+
+    let timeoutId: NodeJS.Timeout | null = null;
+
+    const checkVolume = (volume: number) => {
+      if (volume > 10 && !recording) {
+        // timeoutId = setTimeout(startRecording, 2000);
+        console.log("start recording");
+      } else if (volume < 10 && recording) {
+        // timeoutId = setTimeout(stopRecording, 2000);
+        console.log("stop recording");
+      }
+    };
+
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+
+      const intervalId = setInterval(() => {
+        analyser.getByteFrequencyData(data);
+        const volume = data.reduce((a, b) => a + b, 0) / data.length;
+        setVolume(volume);
+        checkVolume(volume);
+      }, 100);
+
+      return () => {
+        clearInterval(intervalId);
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+        audioContext.close();
+      };
+    });
+  }, [recording]);
+
+
+
   // When text change, set the text to the input and submit the message
   const handleClickRecord = () => {
     if (!recording) {
@@ -33,29 +76,23 @@ export default function Home() {
     }
   };
 
-  const handlePlay = () => {
-    // use text to speech api to play "Bye bye!"
-  };
-
   return (
     <main className="flex h-screen">
       <div className="flex flex-auto overflow-hidden flex-col items-center justify-between p-24">
 
         <SmileyFace />
 
-
         <div className="flex flex-col items-center mt-8 gap-4">
 
-          <div className="px-6  border border-gray-100 rounded-full">
-            <Waveform />
-          </div>
+          <Waveform />
+
           <p>
             {recording
               ? "Recording..."
               : "Click the microphone to start recording"}
           </p>
+          <p>Volume: {volume.toFixed(2)}</p>
         </div>
-
 
         <div className="mb-32 mt-24 flex text-center justify-center lg:mb-0 lg:w-full lg:max-w-5xl gap-12">
           <IconButton
@@ -73,7 +110,7 @@ export default function Home() {
             variant="soft"
             color="red"
             size="4"
-            onClick={handlePlay}
+          // onClick={handlePlay}
           >
             <X width="24" height="24" />
           </IconButton>
@@ -81,9 +118,7 @@ export default function Home() {
       </div>
 
       <aside className="w-1/4 bg-gray-100 rounded-md m-4">
-        <header className="px-4 py-4 w-full border-solid border-b w-9/10 border-gray-200">
-          <h4 className="font-bold text-xl">Transcript</h4>
-        </header>
+
 
         <div className="p-4">
           <div className="flex flex-col w-full max-w-md mx-auto justify-start">
@@ -104,7 +139,7 @@ export default function Home() {
               <input
                 ref={inputRef}
                 disabled={inputDisabled}
-                className="fixed w-full max-w-md p-2 mb-8 border border-gray-300 rounded  bottom-14 ax-w-md"
+                className="fixed  p-2 mb-8 border border-gray-300 rounded  bottom-14 ax-w-md"
                 value={input}
                 placeholder="What is the temperature in the living room?"
                 onChange={(e) => setInput(e.target.value)}
@@ -112,7 +147,7 @@ export default function Home() {
             </form>
 
             <button
-              className="fixed bottom-0 w-full max-w-md p-2 mb-8 text-white bg-red-500 rounded-lg"
+              className="fixed bottom-0 p-2 mb-8 text-white bg-red-500 rounded-lg"
               onClick={() => {
 
               }}

@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 
 export const Waveform = () => {
-  const canvasRef = useRef<HTMLCanvasElement|null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -26,8 +26,8 @@ export const Waveform = () => {
         context.fillStyle = "rgba(0, 0, 0, 0)";
         context.fillRect(0, 0, canvas.width, canvas.height);
 
-        context.lineWidth = 2;
-        context.strokeStyle = "black";
+        context.lineWidth = 8;
+        context.strokeStyle = "gray";
         context.setLineDash([0, 20]);
         context.lineCap = "round";
         context.beginPath();
