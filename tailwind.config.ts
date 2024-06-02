@@ -13,6 +13,15 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      animation: {
+        blink: 'blink 4s infinite',
+      },
+      keyframes: {
+        blink: {
+          '0%, 100%': { height: '3rem' },
+          '50%': { height: '1rem' },
+        },
+      },
     },
   },
   plugins: [],

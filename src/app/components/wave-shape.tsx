@@ -7,6 +7,7 @@ export const Waveform = () => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
     canvas.width = 400;
+    canvas.height = 60;
     const audioContext = new AudioContext();
     const analyser = audioContext.createAnalyser();
     const data = new Uint8Array(analyser.frequencyBinCount);
