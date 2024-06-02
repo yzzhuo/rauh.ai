@@ -231,7 +231,7 @@ export const useVoiceChat = () => {
     //   }, args.duration);
     //   return 'ok';
     // }
-    return;
+    return 'ok';
   }
 
   // handleRequiresAction - handle function call

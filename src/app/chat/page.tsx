@@ -1,14 +1,14 @@
 "use client";
 import Image from "next/image";
-import { IconButton, Flex, Text, Button } from "@radix-ui/themes";
+import { IconButton, Button } from "@radix-ui/themes";
 import { ReaderIcon, ArrowUpIcon } from '@radix-ui/react-icons'
 import { MessageProps, useVoiceChat } from "../../hooks/useVoiceChat";
 import { useEffect, useRef, useState } from "react";
 
-import { Mic, X, PanelRightClose, PanelLeftClose } from "lucide-react";
+import { Mic, X, PanelRightClose, PanelLeftClose, MicOff } from "lucide-react";
 import { Waveform } from "../components/wave-shape";
-import { BackgroundBeams } from "../components/beams-bg";
 import HumeAI from "../hume/page";
+
 import SmileyFace from "../components/smell-face";
 
 export default function Home() {
@@ -34,8 +34,6 @@ export default function Home() {
     const analyser = audioContext.createAnalyser();
     const data = new Uint8Array(analyser.frequencyBinCount);
 
-    let timeoutId: NodeJS.Timeout | null = null;
-
     const checkVolume = (volume: number) => {
       if (volume > 10 && !recording) {
         // timeoutId = setTimeout(startRecording, 2000);
@@ -49,19 +47,7 @@ export default function Home() {
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
       const source = audioContext.createMediaStreamSource(stream);
       source.connect(analyser);
-
-      const intervalId = setInterval(() => {
-        analyser.getByteFrequencyData(data);
-        const volume = data.reduce((a, b) => a + b, 0) / data.length;
-        setVolume(volume);
-        checkVolume(volume);
-      }, 100);
-
       return () => {
-        clearInterval(intervalId);
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
         audioContext.close();
       };
     });
@@ -94,12 +80,12 @@ export default function Home() {
 
           <Waveform />
 
-          <p>
+          <p className="font-bold text-lg">
             {recording
-              ? "Recording..."
-              : "Click the microphone to start recording"}
+              ? "Recording...when stop recording the message will be sent"
+              : "Click the microphone button to start recording"}
           </p>
-          <p>Volume: {volume.toFixed(2)}</p>
+          {/* <p>Volume: {volume.toFixed(2)}</p> */}
         </div>
 
         <div className="mb-32 mt-24 flex text-center justify-center lg:mb-0 lg:w-full lg:max-w-5xl gap-12">
@@ -107,10 +93,10 @@ export default function Home() {
             radius="full"
             size="4"
             variant="soft"
-            color="gray"
+            color={recording ? 'grass' : 'gray'}
             onClick={handleClickRecord}
           >
-            <Mic width="24" height="24" />
+            {recording ? <Mic width="24" height="24" /> : <MicOff width="24" height="24" />}
           </IconButton>
 
           <IconButton
@@ -139,8 +125,7 @@ export default function Home() {
           <div className="flex flex-col w-full max-w-md mx-auto justify-start">
             {messages.map((m: MessageProps, index) => (
               <div key={index} className="whitespace-pre-wrap">
-                <strong>{`${m.role}: `}</strong>
-                {/* <div className="h-4 m-2 bg-yellow-500 rounded-sm">{m.text}</div> */}
+                <strong>{`${m.role.toUpperCase()} `}</strong>
                 <ChatBubble text={m.text} />
                 <br />
               </div>
@@ -166,6 +151,6 @@ export default function Home() {
 
 const ChatBubble = ({ text }: { text: string }) => (
   <div className="flex flex-col leading-1.5 p-4 border-gray-200 bg-blue-200 rounded-e-xl rounded-es-xl">
-    <p className="text-sm font-normal text-gray-900"> {text}</p>
+    <p className="text-sm font-normal text-gray-900">{text}</p>
   </div>
 );
