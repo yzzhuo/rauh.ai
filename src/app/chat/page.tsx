@@ -1,14 +1,14 @@
 "use client";
 import Image from "next/image";
-import { IconButton, Flex, Text, Button } from "@radix-ui/themes";
+import { IconButton, Button } from "@radix-ui/themes";
 import { ReaderIcon, ArrowUpIcon } from '@radix-ui/react-icons'
 import { MessageProps, useVoiceChat } from "../../hooks/useVoiceChat";
 import { useEffect, useRef, useState } from "react";
 
-import { Mic, X } from "lucide-react";
+import { Mic, X, MicOff} from "lucide-react";
 import { Waveform } from "../components/wave-shape";
-import { BackgroundBeams } from "../components/beams-bg";
 import HumeAI from "../hume/page";
+
 import SmileyFace from "../components/smell-face";
 
 export default function Home() {
@@ -49,19 +49,7 @@ export default function Home() {
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
       const source = audioContext.createMediaStreamSource(stream);
       source.connect(analyser);
-
-      const intervalId = setInterval(() => {
-        analyser.getByteFrequencyData(data);
-        const volume = data.reduce((a, b) => a + b, 0) / data.length;
-        setVolume(volume);
-        checkVolume(volume);
-      }, 100);
-
       return () => {
-        clearInterval(intervalId);
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
         audioContext.close();
       };
     });
@@ -94,12 +82,12 @@ export default function Home() {
 
           <Waveform />
 
-          <p>
+          <p className="font-bold text-lg">
             {recording
               ? "Recording..."
               : "Click the microphone to start recording"}
           </p>
-          <p>Volume: {volume.toFixed(2)}</p>
+          {/* <p>Volume: {volume.toFixed(2)}</p> */}
         </div>
 
         <div className="mb-32 mt-24 flex text-center justify-center lg:mb-0 lg:w-full lg:max-w-5xl gap-12">
@@ -107,10 +95,10 @@ export default function Home() {
             radius="full"
             size="4"
             variant="soft"
-            color="gray"
+            color={recording ? 'grass': 'gray'}
             onClick={handleClickRecord}
           >
-            <Mic width="24" height="24" />
+            {recording ? <Mic width="24" height="24" /> : <MicOff width="24" height="24" />}
           </IconButton>
 
           <IconButton
