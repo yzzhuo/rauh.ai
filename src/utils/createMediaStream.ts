@@ -1,4 +1,4 @@
-const getPeakLevel = (analyzer) => {
+const getPeakLevel = (analyzer: AnalyserNode) => {
   const array = new Uint8Array(analyzer.fftSize);
   analyzer.getByteTimeDomainData(array);
   return (

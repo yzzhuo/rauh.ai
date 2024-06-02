@@ -1,10 +1,11 @@
 import React, { useRef, useEffect } from "react";
 
 export const Waveform = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement|null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const context = canvas.getContext("2d");
     canvas.width = 400;
     canvas.height = 60;
@@ -20,7 +21,7 @@ export const Waveform = () => {
         requestAnimationFrame(draw);
 
         analyser.getByteTimeDomainData(data);
-
+        if (!context) return;
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.fillStyle = "rgba(0, 0, 0, 0)";
         context.fillRect(0, 0, canvas.width, canvas.height);
