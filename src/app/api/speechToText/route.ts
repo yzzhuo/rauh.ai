@@ -2,6 +2,12 @@ import { NextResponse } from "next/server";
 import fs from "fs";
 import OpenAI from "openai";
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
