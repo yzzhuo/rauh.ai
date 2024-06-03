@@ -129,7 +129,7 @@ export default function Home() {
       }
       {isSidebarOpen && <aside className="bg-white border-blue-500 md:shadow-inner mb-12 absolute w-full h-screen md:h-auto md:relative md:w-1/3 lg:w-1/4 left-0 flex flex-col align-start">
         {isSidebarOpen &&
-          <IconButton size={"3"} variant="ghost" className="m-2 sticky top-0 bg-gray-200 flex justify-start" onClick={() => setIsSidebarOpen(false)}>
+          <IconButton size={"3"} variant="ghost" className="m-2 sticky top-0flex justify-start" onClick={() => setIsSidebarOpen(false)}>
             <PanelRightClose width="24" height="24" />
           </IconButton>
         }
