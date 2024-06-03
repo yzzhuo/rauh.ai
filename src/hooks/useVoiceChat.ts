@@ -58,7 +58,7 @@ export const useVoiceChat = () => {
     }
   };
 
-  const stopRecording = () => {
+  const sendRecording = () => {
     if (mediaRecorder) {
       setInputDisabled(true);
       isRecording.current = false;
@@ -330,7 +330,7 @@ export const useVoiceChat = () => {
     });
     
   }
-  return { recording, startRecording, stopRecording,
+  return { recording, startRecording, sendRecording,
       messages,
       input,
       setInput,

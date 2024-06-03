@@ -1,4 +1,5 @@
 "use client";
+import 'regenerator-runtime/runtime'
 import Image from "next/image";
 import { IconButton, Button } from "@radix-ui/themes";
 import { ReaderIcon, ArrowUpIcon } from '@radix-ui/react-icons'
@@ -6,16 +7,15 @@ import { MessageProps, useVoiceChat } from "../../hooks/useVoiceChat";
 import { useEffect, useRef, useState } from "react";
 
 import { Mic, X, PanelRightClose, PanelLeftClose, MicOff } from "lucide-react";
-import LoadingAnimation from "../components/Loading";
-import { Waveform } from "../components/wave-shape";
 import HumeAI from "../hume/page";
-
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 import SmileyFace from "../components/smell-face";
 
+const DURATION_FOR_END_OF_SPEECH = 3000;
 export default function Home() {
   const {
     startRecording,
-    stopRecording,
+    sendRecording,
     recording,
     inputDisabled,
     // threadId,
@@ -26,17 +26,53 @@ export default function Home() {
     setInput,
     cancelRecord,
   } = useVoiceChat();
-  const inputRef = useRef<HTMLInputElement>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [speechDetectTimer, setSpeechDetectTimer] = useState<NodeJS.Timeout | null>(null);
+
   // const [dataArray, setDataArray] = useState<Uint8Array>();
   // 处理音频相关逻辑，主要是自动开启/停止录音
   const [volume, setVolume] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition
+  } = useSpeechRecognition();
 
+
+  useEffect(() => {
+    // Clear the existing timer
+    if (speechDetectTimer) {
+      clearTimeout(speechDetectTimer);
+    }
+    // Set a new timer
+    setSpeechDetectTimer(setTimeout(() => {
+      // Send the voice message
+      if (transcript && recording && !inputDisabled) {
+        setInput(transcript);
+        console.log('Send Message:', transcript);
+        // stopRecord and SendMessage
+        setInput(transcript);
+        sendRecording();
+        resetTranscript();
+      }
+    }, DURATION_FOR_END_OF_SPEECH)); // 3000 milliseconds = 3 seconds
+  }, [transcript]);
+
+  useEffect(() => {
+    if (inputDisabled) {
+      startRecording();
+    }
+  }, [inputDisabled]);
   useEffect(() => {
     if (/Mobi|Android/i.test(navigator.userAgent)) {
       setIsMobile(true);
     }
+    if (!browserSupportsSpeechRecognition) {
+      alert('Your browser does not support speech recognition software! Please use Chrome');
+    }
+    
   }, []);
 
   useEffect(() => {
@@ -70,16 +106,23 @@ export default function Home() {
   }, [recording]);
 
 
-
   // When text change, set the text to the input and submit the message
   const handleClickRecord = () => {
     if (!recording) {
       startRecording();
+      SpeechRecognition.startListening({ continuous: true });
     } else {
-      stopRecording();
+      cancelRecord();
+      resetTranscript();
+      SpeechRecognition.abortListening()
     }
   };
 
+  const handleClickCancel = () => {
+    cancelRecord();
+    resetTranscript();
+    SpeechRecognition.abortListening()
+  }
 
   return (
     <main className="flex h-screen relative">
@@ -96,26 +139,25 @@ export default function Home() {
             variant="soft"
             color={recording ? 'grass' : 'gray'}
             onClick={handleClickRecord}
-            className={(!inputDisabled && !recording) ? 'animate-bounce' : ''}
           >
             {recording ? <Mic width="24" height="24" /> : <MicOff width="24" height="24" />}
           </IconButton>
-          <IconButton
+          {/* <IconButton
             radius="full"
             variant="soft"
             color="red"
             size="4"
-            onClick={cancelRecord}
+            onClick={handleClickCancel}
           >
             <X width="24" height="24" />
-          </IconButton>
+          </IconButton> */}
         </div>
         }
          {!isMobile && <div className="flex flex-col items-center my-8 gap-4">
           {/* <Waveform data={dataArray}/> */}
           <p className="md:text-xl text-center"> 
             {recording
-              ? "Recording...you can click the microphone button to stop recording and send your message"
+              ? "Listening..."
               : "To start speaking, click the microphone button"}
           </p>
           <p className="md:text-lg text-sm">Input Volume: {volume.toFixed(2)}</p>
