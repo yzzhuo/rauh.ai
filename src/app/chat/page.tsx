@@ -73,12 +73,6 @@ export default function Home() {
     }
   };
 
-  // Click the cloes button
-  const handleClickClose = () => {
-    // navigate to the home page
-    window.location.href = '/';
-  };
-
   return (
     <main className="flex h-screen">
       <div className="flex flex-auto overflow-hidden flex-col items-center justify-between p-24">
@@ -87,10 +81,10 @@ export default function Home() {
         <div className="flex flex-col items-center mt-8 gap-4">
 
           {/* <Waveform data={dataArray}/> */}
-          <p className="font-bold text-lg">
+          <p className="text-lg">
             {recording
-              ? "Recording...when stop recording the message will be sent"
-              : "Click the microphone button to start recording"}
+              ? "Recording...you can click the microphone button to stop recording and send your message"
+              : "To start speaking, click the microphone button"}
           </p>
           <p>Input Volume: {volume.toFixed(2)}</p>
         </div>
