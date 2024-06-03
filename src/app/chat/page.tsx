@@ -18,6 +18,7 @@ export default function Home() {
     recording,
     inputDisabled,
     // threadId,
+    messagesEndRef,
     messages,
     input,
     handleSubmit,
@@ -130,7 +131,7 @@ export default function Home() {
                 <br />
               </div>
             ))}
-
+            <div ref={messagesEndRef} />
             {inputDisabled && (
               <div className="w-full h-8 max-w-md p-2 mb-8 bg-gray-300 rounded-lg dark:bg-gray-600 animate-pulse" />
             )}

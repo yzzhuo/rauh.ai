@@ -321,6 +321,7 @@ export const useVoiceChat = () => {
       setInput,
       handleSubmit,
       inputDisabled,
-      stop: () => {}
+      stop: () => {},
+      messagesEndRef
    };
 };
