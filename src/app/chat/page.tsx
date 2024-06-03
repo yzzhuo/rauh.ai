@@ -53,7 +53,6 @@ export default function Home() {
         setInput(transcript);
         console.log('Send Message:', transcript);
         // stopRecord and SendMessage
-        setInput(transcript);
         sendRecording();
         resetTranscript();
       }
