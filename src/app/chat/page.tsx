@@ -31,6 +31,13 @@ export default function Home() {
   // const [dataArray, setDataArray] = useState<Uint8Array>();
   // 处理音频相关逻辑，主要是自动开启/停止录音
   const [volume, setVolume] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (/Mobi|Android/i.test(navigator.userAgent)) {
+      setIsMobile(true);
+    }
+  }, []);
 
   useEffect(() => {
     const audioContext = new AudioContext();
@@ -78,7 +85,7 @@ export default function Home() {
     <main className="flex h-screen relative">
       <div className="pd:12 flex flex-auto overflow-hidden flex-col items-center justify-between px-4 py-12 md:p-24">
         <SmileyFace loading={inputDisabled}/>
-        <div className="flex flex-col items-center my-8 gap-4 order-3">
+        {!isMobile && <div className="flex flex-col items-center my-8 gap-4 order-3">
           {/* <Waveform data={dataArray}/> */}
           <p className="md:text-xl text-center"> 
             {recording
@@ -87,8 +94,12 @@ export default function Home() {
           </p>
           <p className="md:text-lg text-sm">Input Volume: {volume.toFixed(2)}</p>
         </div>
-
-        <div className="md:mb-32 md:mt-24 flex text-center justify-center lg:mb-0 lg:w-full lg:max-w-5xl gap-12">
+        }
+        {isMobile ? <div className="text-center mb-12">
+          <h3 className="font-bold text-2xl">The feature may not work correctly on mobile devices</h3> 
+          <p className="my-4">We were unable to connect to your mmicrophone, please use our demo on a PC browser.</p>
+        </div>
+         :<div className="md:mb-32 md:mt-24 flex text-center justify-center lg:mb-0 lg:w-full lg:max-w-5xl gap-12">
           <IconButton
             radius="full"
             size="4"
@@ -109,6 +120,7 @@ export default function Home() {
             <X width="24" height="24" />
           </IconButton>
         </div>
+      }
       </div>
       {!isSidebarOpen &&
         <IconButton size={"3"} variant="ghost" className="m-4 absolute top-0 right-0" onClick={() => setIsSidebarOpen(true)}>
