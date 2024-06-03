@@ -40,7 +40,6 @@ export default function Home() {
     browserSupportsSpeechRecognition
   } = useSpeechRecognition();
 
-
   useEffect(() => {
     // Clear the existing timer
     if (speechDetectTimer) {
@@ -61,6 +60,8 @@ export default function Home() {
 
   useEffect(() => {
     if (inputDisabled) {
+      // clear the previous recording data to avoid too large audio 
+      cancelRecord();
       startRecording();
     }
   }, [inputDisabled]);
@@ -116,12 +117,6 @@ export default function Home() {
       SpeechRecognition.abortListening()
     }
   };
-
-  const handleClickCancel = () => {
-    cancelRecord();
-    resetTranscript();
-    SpeechRecognition.abortListening()
-  }
 
   return (
     <main className="flex h-screen relative">
