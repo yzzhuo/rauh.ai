@@ -16,7 +16,6 @@ export default function Home() {
           Practice Mindfulness with AI Guide
         </h2>
       </div>
-
       <button onClick={handleClickStart} className="px-5 py-3 mt-16 rounded-md border border-black bg-white text-black text-base hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200">
         Start Meditation
       </button>

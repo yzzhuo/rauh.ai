@@ -26,6 +26,11 @@ export default function RootLayout({
             scaling="100%"
           >
               {children}
+            <footer className="fixed bottom-0 w-full h-12 flex items-center justify-center border-t">
+                <p className="text-center text-xs">
+                  This voice assistant demo is for <a className="underline" href="https://aaltovai.wordpress.com/">course</a> study purposes only. All rights reserved by the developer.
+                </p>
+            </footer>
           </Theme>
       </body>
     </html>
