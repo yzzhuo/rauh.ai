@@ -75,22 +75,20 @@ export default function Home() {
 
 
   return (
-    <main className="flex h-screen">
-      <div className="flex flex-auto overflow-hidden flex-col items-center justify-between p-24">
-
-        <SmileyFace  loading={inputDisabled}/>
-        <div className="flex flex-col items-center mt-8 gap-4">
-
+    <main className="flex h-screen relative">
+      <div className="pd:12 flex flex-auto overflow-hidden flex-col items-center justify-between px-4 py-12 md:p-24">
+        <SmileyFace loading={inputDisabled}/>
+        <div className="flex flex-col items-center my-8 gap-4 order-3">
           {/* <Waveform data={dataArray}/> */}
-          <p className="text-lg">
+          <p className="md:text-xl text-center"> 
             {recording
               ? "Recording...you can click the microphone button to stop recording and send your message"
               : "To start speaking, click the microphone button"}
           </p>
-          <p>Input Volume: {volume.toFixed(2)}</p>
+          <p className="md:text-lg text-sm">Input Volume: {volume.toFixed(2)}</p>
         </div>
 
-        <div className="mb-32 mt-24 flex text-center justify-center lg:mb-0 lg:w-full lg:max-w-5xl gap-12">
+        <div className="md:mb-32 md:mt-24 flex text-center justify-center lg:mb-0 lg:w-full lg:max-w-5xl gap-12">
           <IconButton
             radius="full"
             size="4"
@@ -101,7 +99,6 @@ export default function Home() {
           >
             {recording ? <Mic width="24" height="24" /> : <MicOff width="24" height="24" />}
           </IconButton>
-
           <IconButton
             radius="full"
             variant="soft"
@@ -114,13 +111,13 @@ export default function Home() {
         </div>
       </div>
       {!isSidebarOpen &&
-        <IconButton size={"3"} variant="ghost" className="m-4" onClick={() => setIsSidebarOpen(true)}>
+        <IconButton size={"3"} variant="ghost" className="m-4 absolute top-0 right-0" onClick={() => setIsSidebarOpen(true)}>
           <PanelLeftClose width="24" height="24" />
         </IconButton>
       }
-      {isSidebarOpen && <aside className="w-1/4 bg-gray-100 rounded-md m-4 flex flex-col align-start">
+      {isSidebarOpen && <aside className="bg-white border-blue-500 md:shadow-inner mb-12 absolute w-full h-screen md:h-auto md:relative md:w-1/3 lg:w-1/4 left-0 flex flex-col align-start">
         {isSidebarOpen &&
-          <IconButton size={"3"} variant="ghost" className="m-2 flex justify-start" onClick={() => setIsSidebarOpen(false)}>
+          <IconButton size={"3"} variant="ghost" className="m-2 sticky top-0 bg-gray-200 flex justify-start" onClick={() => setIsSidebarOpen(false)}>
             <PanelRightClose width="24" height="24" />
           </IconButton>
         }
@@ -135,11 +132,11 @@ export default function Home() {
             ))}
             <div ref={messagesEndRef} />
             {inputDisabled && (
-              <div className="w-full h-8 max-w-md p-2 mb-8 bg-gray-300 rounded-lg dark:bg-gray-600 animate-pulse" />
+              <div className="w-full h-8 max-w-md p-2 mb-8 bg-gray-300 rounded:lg dark:bg-gray-600 animate-pulse" />
             )}
           </div>
         </div>
-        <form className='w-full flex h-[64px] gap-2 p-4 border-solid border-t-2' onSubmit={handleSubmit}>
+        <form className='mb-16 w-full overflow-hidden flex h-[64px] gap-2 p-4 border-solid border-t-2' onSubmit={handleSubmit}>
           <input onChange={(e) => setInput(e.target.value)} value={input} className='bg-white flex-1 text-sm outline-none p-2' placeholder='Send a message...' />
           <Button type="submit" className="">
             <span className='font-semibold text-sm'>Send</span>
