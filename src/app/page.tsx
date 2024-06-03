@@ -1,7 +1,4 @@
 'use client'
-import Image from "next/image";
-import { Button, Flex, Text } from '@radix-ui/themes';
-
 export default function Home() {
 
   const handleClickStart = () => {
