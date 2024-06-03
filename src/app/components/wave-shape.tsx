@@ -1,65 +1,56 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, use } from "react";
 
-export const Waveform = () => {
+export const Waveform = ({data}: {
+  data: Uint8Array|null;
+}) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const context = canvas.getContext("2d");
     canvas.width = 400;
     canvas.height = 60;
-    const audioContext = new AudioContext();
-    const analyser = audioContext.createAnalyser();
-    const data = new Uint8Array(analyser.frequencyBinCount);
-
-    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-      const source = audioContext.createMediaStreamSource(stream);
-      source.connect(analyser);
-
-      const draw = () => {
-        requestAnimationFrame(draw);
-
-        analyser.getByteTimeDomainData(data);
-        if (!context) return;
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.fillStyle = "rgba(0, 0, 0, 0)";
-        context.fillRect(0, 0, canvas.width, canvas.height);
-
-        context.lineWidth = 8;
-        context.strokeStyle = "gray";
-        context.setLineDash([0, 20]);
-        context.lineCap = "round";
-        context.beginPath();
-
-        const sliceWidth = canvas.width / data.length;
-        let x = 0;
-
-        for (let i = 0; i < data.length; i++) {
-          const v = data[i] / 128.0;
-          const y = Math.max((v * canvas.height) / 2, 10);
-
-          if (i === 0) {
-            context.moveTo(x, y);
-          } else {
-            context.lineTo(x, y);
-          }
-
-          x += sliceWidth;
-        }
-
-        context.lineTo(canvas.width, canvas.height / 2);
-        context.stroke();
-      };
-
-      draw();
-    });
-
-    return () => {
-      audioContext.close();
-    };
   }, []);
 
+  useEffect(() => {
+    requestAnimationFrame(() => draw(data));
+  }
+  , [data]);
+
+  const draw = (data: Uint8Array|null) => {
+    if (!canvasRef.current || !data) return;
+    const canvas = canvasRef.current;
+    const context = canvasRef.current?.getContext("2d");
+    if (!context) return;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "rgba(0, 0, 0, 0)";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    context.lineWidth = 8;
+    context.strokeStyle = "gray";
+    context.setLineDash([0, 20]);
+    context.lineCap = "round";
+    context.beginPath();
+
+    const sliceWidth = canvas.width / data.length;
+    let x = 0;
+
+    for (let i = 0; i < data.length; i++) {
+      const v = data[i] / 128.0;
+      const y = Math.max((v * canvas.height) / 2, 10);
+
+      if (i === 0) {
+        context.moveTo(x, y);
+      } else {
+        context.lineTo(x, y);
+      }
+
+      x += sliceWidth;
+    }
+
+    context.lineTo(canvas.width, canvas.height / 2);
+    context.stroke();
+  };
   return <canvas ref={canvasRef} />;
 };
 

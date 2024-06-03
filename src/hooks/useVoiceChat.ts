@@ -20,6 +20,7 @@ export const useVoiceChat = () => {
   const [mediaRecorder, setMediaRecorder] = useState<any>(null);
   const [recording, setRecording] = useState(false);
   const isRecording = useRef(false);
+  const isCancelled = useRef(false);
   const chunks = useRef<Blob[]>([]);
   const { playSpeech } = usePlayVoice();
   const messagesRef = useRef<MessageProps[]>([]);
@@ -40,6 +41,7 @@ export const useVoiceChat = () => {
     };
 
     mediaRecorder.onstop = () => {
+      if (isCancelled.current) return;
       const audioBlob = new Blob(chunks.current, { type: "audio/wav" });
       blobToBase64(audioBlob, getText);
     };
@@ -50,6 +52,7 @@ export const useVoiceChat = () => {
   const startRecording = () => {
     if (mediaRecorder) {
       isRecording.current = true;
+      isCancelled.current = false;
       mediaRecorder.start();
       setRecording(true);
     }
@@ -57,11 +60,20 @@ export const useVoiceChat = () => {
 
   const stopRecording = () => {
     if (mediaRecorder) {
+      setInputDisabled(true);
       isRecording.current = false;
       mediaRecorder.stop();
       setRecording(false);
     }
   };
+
+  const cancelRecord = () => {
+    isCancelled.current = true;
+    if (isRecording.current) {
+      mediaRecorder.stop();
+      setRecording(false);
+    }
+  }
 
   const getText = async (base64data: string) => {
     try {
@@ -95,18 +107,21 @@ export const useVoiceChat = () => {
 
     useEffect(() => {
       // create a new threadID when chat component created
+      setInputDisabled(true);
       createThread();
       if (typeof window !== "undefined") {
         navigator.mediaDevices
           .getUserMedia({ audio: true })
           .then(initialMediaRecorder);
       }
-      // play the voice
-      playSpeech(GREETING);
       setMessages((prevMessages) => [
         ...prevMessages,
         { role: "assistant", text: GREETING },
       ]);
+      // play the voice
+      playSpeech(GREETING).then(() => {
+        setInputDisabled(false);
+      })
     }, []);
     
   useEffect(() => {
@@ -252,11 +267,11 @@ export const useVoiceChat = () => {
   };
 
   // handleRunCompleted - re-enable the input form
-  const handleRunCompleted = (event: AssistantStreamEvent.ThreadRunCompleted) => {
-    setInputDisabled(false);
+  const handleRunCompleted = async (event: AssistantStreamEvent.ThreadRunCompleted) => {
     console.log('completed', event);
     const lastMessage = messagesRef.current[messagesRef.current.length - 1];
-    playSpeech(lastMessage.text);
+    await playSpeech(lastMessage.text);
+    setInputDisabled(false);
   };
 
   const handleReadableStream = (stream: AssistantStream) => {
@@ -321,7 +336,7 @@ export const useVoiceChat = () => {
       setInput,
       handleSubmit,
       inputDisabled,
-      stop: () => {},
+      cancelRecord,
       messagesEndRef
    };
 };

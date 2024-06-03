@@ -6,6 +6,7 @@ import { MessageProps, useVoiceChat } from "../../hooks/useVoiceChat";
 import { useEffect, useRef, useState } from "react";
 
 import { Mic, X, PanelRightClose, PanelLeftClose, MicOff } from "lucide-react";
+import LoadingAnimation from "../components/Loading";
 import { Waveform } from "../components/wave-shape";
 import HumeAI from "../hume/page";
 
@@ -23,10 +24,11 @@ export default function Home() {
     input,
     handleSubmit,
     setInput,
+    cancelRecord,
   } = useVoiceChat();
   const inputRef = useRef<HTMLInputElement>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+  // const [dataArray, setDataArray] = useState<Uint8Array>();
   // 处理音频相关逻辑，主要是自动开启/停止录音
   const [volume, setVolume] = useState(0);
 
@@ -35,19 +37,25 @@ export default function Home() {
     const analyser = audioContext.createAnalyser();
     const data = new Uint8Array(analyser.frequencyBinCount);
 
-    const checkVolume = (volume: number) => {
-      if (volume > 10 && !recording) {
-        // timeoutId = setTimeout(startRecording, 2000);
-        console.log("start recording");
-      } else if (volume < 10 && recording) {
-        // timeoutId = setTimeout(stopRecording, 2000);
-        console.log("stop recording");
-      }
-    };
-
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
       const source = audioContext.createMediaStreamSource(stream);
       source.connect(analyser);
+  
+      analyser.fftSize = 256;
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      const update = () => {
+        analyser.getByteFrequencyData(dataArray);
+        let values = 0;
+        for (let i = 0; i < bufferLength; i++) {
+          values += dataArray[i];
+        }
+        const average = values / bufferLength;
+        setVolume(recording ? average : 0);
+        requestAnimationFrame(update);
+      };
+      update();
+  
       return () => {
         audioContext.close();
       };
@@ -75,18 +83,16 @@ export default function Home() {
     <main className="flex h-screen">
       <div className="flex flex-auto overflow-hidden flex-col items-center justify-between p-24">
 
-        <SmileyFace />
-
+        <SmileyFace  loading={inputDisabled}/>
         <div className="flex flex-col items-center mt-8 gap-4">
 
-          <Waveform />
-
+          {/* <Waveform data={dataArray}/> */}
           <p className="font-bold text-lg">
             {recording
               ? "Recording...when stop recording the message will be sent"
               : "Click the microphone button to start recording"}
           </p>
-          {/* <p>Volume: {volume.toFixed(2)}</p> */}
+          <p>Input Volume: {volume.toFixed(2)}</p>
         </div>
 
         <div className="mb-32 mt-24 flex text-center justify-center lg:mb-0 lg:w-full lg:max-w-5xl gap-12">
@@ -96,6 +102,7 @@ export default function Home() {
             variant="soft"
             color={recording ? 'grass' : 'gray'}
             onClick={handleClickRecord}
+            className={(!inputDisabled && !recording) ? 'animate-bounce' : ''}
           >
             {recording ? <Mic width="24" height="24" /> : <MicOff width="24" height="24" />}
           </IconButton>
@@ -105,7 +112,7 @@ export default function Home() {
             variant="soft"
             color="red"
             size="4"
-            onClick={handleClickClose}
+            onClick={cancelRecord}
           >
             <X width="24" height="24" />
           </IconButton>
@@ -116,9 +123,9 @@ export default function Home() {
           <PanelLeftClose width="24" height="24" />
         </IconButton>
       }
-      {isSidebarOpen && <aside className="w-1/4 bg-gray-100 rounded-md m-4 flex flex-col">
+      {isSidebarOpen && <aside className="w-1/4 bg-gray-100 rounded-md m-4 flex flex-col align-start">
         {isSidebarOpen &&
-          <IconButton size={"3"} variant="ghost" className="m-2" onClick={() => setIsSidebarOpen(false)}>
+          <IconButton size={"3"} variant="ghost" className="m-2 flex justify-start" onClick={() => setIsSidebarOpen(false)}>
             <PanelRightClose width="24" height="24" />
           </IconButton>
         }
