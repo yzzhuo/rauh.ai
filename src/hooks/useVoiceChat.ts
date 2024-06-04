@@ -53,6 +53,7 @@ export const useVoiceChat = () => {
     if (mediaRecorder) {
       isRecording.current = true;
       isCancelled.current = false;
+      chunks.current = [];
       mediaRecorder.start();
       setRecording(true);
     }
@@ -64,6 +65,7 @@ export const useVoiceChat = () => {
       isRecording.current = false;
       mediaRecorder.stop();
       setRecording(false);
+      console.log('Stop Recording and Send Message');
     }
   };
 
@@ -126,6 +128,7 @@ export const useVoiceChat = () => {
     
   useEffect(() => {
     if (audioText) {
+      console.log('Send Message', audioText);
       setInput(audioText);
       sendMessage(audioText);
       setMessages((prevMessages) => [
@@ -337,6 +340,6 @@ export const useVoiceChat = () => {
       handleSubmit,
       inputDisabled,
       cancelRecord,
-      messagesEndRef
+      messagesEndRef,
    };
 };

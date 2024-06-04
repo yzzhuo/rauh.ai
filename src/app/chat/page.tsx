@@ -1,13 +1,10 @@
 "use client";
 import 'regenerator-runtime/runtime'
-import Image from "next/image";
 import { IconButton, Button } from "@radix-ui/themes";
-import { ReaderIcon, ArrowUpIcon } from '@radix-ui/react-icons'
 import { MessageProps, useVoiceChat } from "../../hooks/useVoiceChat";
 import { useEffect, useRef, useState } from "react";
 
-import { Mic, X, PanelRightClose, PanelLeftClose, MicOff } from "lucide-react";
-import HumeAI from "../hume/page";
+import { Mic, PanelRightClose, PanelLeftClose, MicOff } from "lucide-react";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 import SmileyFace from "../components/smell-face";
 
@@ -19,7 +16,6 @@ export default function Home() {
     sendRecording,
     recording,
     inputDisabled,
-    // threadId,
     messagesEndRef,
     messages,
     input,
@@ -36,7 +32,6 @@ export default function Home() {
   const [isMobile, setIsMobile] = useState(false);
   const {
     transcript,
-    listening,
     resetTranscript,
     browserSupportsSpeechRecognition
   } = useSpeechRecognition();
@@ -50,7 +45,6 @@ export default function Home() {
     setSpeechDetectTimer(setTimeout(() => {
       // Send the voice message
       if (transcript && recording && !inputDisabled) {
-        console.log('Send Message:', transcript);
         // stopRecord and SendMessage
         sendRecording();
         resetTranscript();
@@ -63,8 +57,10 @@ export default function Home() {
       // clear the previous recording data to avoid too large audio 
       cancelRecord();
       startRecording();
+      console.log('Start Recording');
     }
   }, [inputDisabled]);
+  
   useEffect(() => {
     if (/Mobi|Android/i.test(navigator.userAgent)) {
       setIsMobile(true);
