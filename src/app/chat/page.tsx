@@ -11,7 +11,7 @@ import HumeAI from "../hume/page";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 import SmileyFace from "../components/smell-face";
 
-const DURATION_FOR_END_OF_SPEECH = 3000;
+const DURATION_FOR_END_OF_SPEECH = process.env.NEXT_PUBLIC_LISTENING_WAITING_TIME ? parseInt(process.env.NEXT_PUBLIC_LISTENING_WAITING_TIME) : 3000;
 export default function Home() {
   const {
     startRecording,
@@ -49,7 +49,6 @@ export default function Home() {
     setSpeechDetectTimer(setTimeout(() => {
       // Send the voice message
       if (transcript && recording && !inputDisabled) {
-        setInput(transcript);
         console.log('Send Message:', transcript);
         // stopRecord and SendMessage
         sendRecording();
