@@ -275,6 +275,7 @@ export const useVoiceChat = () => {
     const lastMessage = messagesRef.current[messagesRef.current.length - 1];
     await playSpeech(lastMessage.text);
     setInputDisabled(false);
+    chunks.current = [];
   };
 
   const handleReadableStream = (stream: AssistantStream) => {
