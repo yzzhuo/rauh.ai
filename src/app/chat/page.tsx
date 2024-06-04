@@ -21,10 +21,11 @@ export default function Home() {
     input,
     handleSubmit,
     setInput,
-    cancelRecord,
+    stopRecording,
   } = useVoiceChat();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [speechDetectTimer, setSpeechDetectTimer] = useState<NodeJS.Timeout | null>(null);
+  const [isStart, setIsStart] = useState(false);
 
   // const [dataArray, setDataArray] = useState<Uint8Array>();
   // 处理音频相关逻辑，主要是自动开启/停止录音
@@ -52,14 +53,6 @@ export default function Home() {
     }, DURATION_FOR_END_OF_SPEECH)); // 3000 milliseconds = 3 seconds
   }, [transcript]);
 
-  useEffect(() => {
-    if (inputDisabled) {
-      // clear the previous recording data to avoid too large audio 
-      cancelRecord();
-      startRecording();
-      console.log('Start Recording');
-    }
-  }, [inputDisabled]);
   
   useEffect(() => {
     if (/Mobi|Android/i.test(navigator.userAgent)) {
@@ -105,10 +98,13 @@ export default function Home() {
   // When text change, set the text to the input and submit the message
   const handleClickRecord = () => {
     if (!recording) {
+      if (!isStart) {
+        setIsStart(true);
+      }
       startRecording();
       SpeechRecognition.startListening({ continuous: true });
     } else {
-      cancelRecord();
+      stopRecording();
       resetTranscript();
       SpeechRecognition.abortListening()
     }
@@ -127,10 +123,11 @@ export default function Home() {
             radius="full"
             size="4"
             variant="soft"
-            color={recording ? 'grass' : 'gray'}
+            color={recording || isStart ? 'grass' : 'gray'}
             onClick={handleClickRecord}
+            className={!isStart ? 'animate-bounce' : ''}
           >
-            {recording ? <Mic width="24" height="24" /> : <MicOff width="24" height="24" />}
+            {recording || isStart ? <Mic width="24" height="24" /> : <MicOff width="24" height="24" />}
           </IconButton>
           {/* <IconButton
             radius="full"
@@ -148,7 +145,7 @@ export default function Home() {
           <p className="md:text-xl text-center"> 
             {recording
               ? "Listening..."
-              : "To start speaking, click the microphone button"}
+              : ""}
           </p>
           <p className="md:text-lg text-sm">Input Volume: {volume.toFixed(2)}</p>
         </div>

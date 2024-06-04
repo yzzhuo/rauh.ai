@@ -16,7 +16,6 @@ export async function POST(req: any) {
   const {url} = await put(filePath, audio, {
     access: 'public',
   });
-  console.log('==url', url);
   try {
     // Create a readable stream from the temporary WAV file
     const res = await fetch(url);

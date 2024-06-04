@@ -32,6 +32,7 @@ export const useVoiceChat = () => {
     const mediaRecorder = new MediaRecorder(stream);
 
     mediaRecorder.onstart = () => {
+      console.log('Start Recording');
       createMediaStream(stream);
       chunks.current = [];
     };
@@ -41,6 +42,7 @@ export const useVoiceChat = () => {
     };
 
     mediaRecorder.onstop = () => {
+      console.log('Stop Recording');
       if (isCancelled.current) return;
       const audioBlob = new Blob(chunks.current, { type: "audio/wav" });
       blobToBase64(audioBlob, getText);
@@ -50,12 +52,20 @@ export const useVoiceChat = () => {
   };
 
   const startRecording = () => {
-    if (mediaRecorder) {
-      isRecording.current = true;
+    if (mediaRecorder && !isRecording.current) {
       isCancelled.current = false;
+      isRecording.current = true;
       chunks.current = [];
       mediaRecorder.start();
       setRecording(true);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder && isRecording.current) {
+      isRecording.current = false;
+      mediaRecorder.stop();
+      setRecording(false);
     }
   };
 
@@ -65,17 +75,9 @@ export const useVoiceChat = () => {
       isRecording.current = false;
       mediaRecorder.stop();
       setRecording(false);
-      console.log('Stop Recording and Send Message');
     }
   };
 
-  const cancelRecord = () => {
-    isCancelled.current = true;
-    if (isRecording.current) {
-      mediaRecorder.stop();
-      setRecording(false);
-    }
-  }
 
   const getText = async (base64data: string) => {
     try {
@@ -128,7 +130,6 @@ export const useVoiceChat = () => {
     
   useEffect(() => {
     if (audioText) {
-      console.log('Send Message', audioText);
       setInput(audioText);
       sendMessage(audioText);
       setMessages((prevMessages) => [
@@ -157,6 +158,7 @@ export const useVoiceChat = () => {
   };
 
   const sendMessage = async (text: string) => {
+    console.log('Send Message', text);
     const response = await fetch(
       `/api/assistants/threads/${threadId}/messages`,
       {
@@ -204,6 +206,7 @@ export const useVoiceChat = () => {
   /* Stream Event Handlers */
   // textCreated - create new assistant message
   const handleTextCreated = () => {
+    stopRecording();
     appendMessage("assistant", "");
   };
 
@@ -231,8 +234,8 @@ export const useVoiceChat = () => {
   };
 
   const functionCallHandler = async (call: any) => {
-    console.log('call====', call);
     // implement your own logic here
+    stopRecording();
     if (call?.function?.name == "play_voice") {
       const args = JSON.parse(call.function.arguments);
       await appendMessage("assistant", args.text);
@@ -241,14 +244,14 @@ export const useVoiceChat = () => {
         success: true,
       }) 
     }
-    // else if (call?.function?.name == "setTimer") {
-    //   // set a timer with promise
-    //   const args = JSON.parse(call.function.arguments);
-    //   setTimeout(() => {
-    //     console.log('timer done');
-    //   }, args.duration);
-    //   return 'ok';
-    // }
+    else if (call?.function?.name == "setTimer") {
+      // set a timer with promise
+      const args = JSON.parse(call.function.arguments);
+      setTimeout(() => {
+        console.log('timer done');
+      }, args.duration);
+      return 'ok';
+    }
     return 'ok';
   }
 
@@ -262,7 +265,7 @@ export const useVoiceChat = () => {
     const toolCallOutputs = [];
     for (const toolCall of toolCalls) {
       const result = await functionCallHandler(toolCall);
-      console.log('result====', result);
+      console.log('toolCall: result', result);
       toolCallOutputs.push({ output: result, tool_call_id: toolCall.id });
     }
     setInputDisabled(true);
@@ -271,11 +274,11 @@ export const useVoiceChat = () => {
 
   // handleRunCompleted - re-enable the input form
   const handleRunCompleted = async (event: AssistantStreamEvent.ThreadRunCompleted) => {
-    console.log('completed', event);
     const lastMessage = messagesRef.current[messagesRef.current.length - 1];
     await playSpeech(lastMessage.text);
     setInputDisabled(false);
-    chunks.current = [];
+    stopRecording();
+    startRecording();
   };
 
   const handleReadableStream = (stream: AssistantStream) => {
@@ -340,7 +343,7 @@ export const useVoiceChat = () => {
       setInput,
       handleSubmit,
       inputDisabled,
-      cancelRecord,
+      stopRecording,
       messagesEndRef,
    };
 };
