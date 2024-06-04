@@ -43,7 +43,6 @@ export const useVoiceChat = () => {
 
     mediaRecorder.onstop = () => {
       console.log('Stop Recording');
-      if (isCancelled.current) return;
       const audioBlob = new Blob(chunks.current, { type: "audio/wav" });
       blobToBase64(audioBlob, getText);
     };
@@ -79,7 +78,7 @@ export const useVoiceChat = () => {
   };
 
 
-  const getText = async (base64data: string) => {
+  const getText = async (base64data: string, attempts = 3) => {
     try {
       const response = await fetch("/api/speechToText", {
         method: "POST",
@@ -94,6 +93,12 @@ export const useVoiceChat = () => {
       setAudioText(text);
     } catch (error) {
       console.log(error);
+      if (attempts > 0) {
+        console.log(`Retrying... Attempts left: ${attempts - 1}`);
+        await getText(base64data, attempts - 1);
+      } else {
+        console.error("Max retry attempts reached. Giving up.");
+      }
     }
   };
   /**
@@ -278,7 +283,9 @@ export const useVoiceChat = () => {
     await playSpeech(lastMessage.text);
     setInputDisabled(false);
     stopRecording();
-    startRecording();
+    setTimeout(() => {
+      startRecording();
+    }, 500);
   };
 
   const handleReadableStream = (stream: AssistantStream) => {
