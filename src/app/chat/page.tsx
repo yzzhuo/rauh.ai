@@ -12,6 +12,7 @@ import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognitio
 import SmileyFace from "../components/smell-face";
 
 const DURATION_FOR_END_OF_SPEECH = process.env.NEXT_PUBLIC_LISTENING_WAITING_TIME ? parseInt(process.env.NEXT_PUBLIC_LISTENING_WAITING_TIME) : 3000;
+console.log('DURATION_FOR_END_OF_SPEECH:', DURATION_FOR_END_OF_SPEECH);
 export default function Home() {
   const {
     startRecording,
