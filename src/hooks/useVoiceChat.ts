@@ -241,7 +241,7 @@ export const useVoiceChat = () => {
   const functionCallHandler = async (call: any) => {
     // implement your own logic here
     stopRecording();
-    if (call?.function?.name == "play_voice") {
+    if (call?.function?.name == "speak") {
       const args = JSON.parse(call.function.arguments);
       await appendMessage("assistant", args.text);
       await playSpeech(args.text);
@@ -249,13 +249,15 @@ export const useVoiceChat = () => {
         success: true,
       }) 
     }
-    else if (call?.function?.name == "setTimer") {
+    else if (call?.function?.name == "break") {
       // set a timer with promise
       const args = JSON.parse(call.function.arguments);
-      setTimeout(() => {
-        console.log('timer done');
-      }, args.duration);
-      return 'ok';
+      await appendMessage("assistant", `[Break for ${args.duration} seconds]`);
+      return await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve('ok');
+        }, args.duration * 1000);
+      });
     }
     return 'ok';
   }
