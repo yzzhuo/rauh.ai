@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Meditation Voice AI
+A Next.js application that provides an interactive meditation experience through voice interactions and AI assistance.
+
+<img src="./public/screenshot.png" width="400px"/>
+
+
+## Features
+- Voice-based interaction with AI assistant
+- Text-to-speech capabilities using ElevenLabs/OpenAI
+- Real-time voice recording and processing
+
+## Tech Stack
+- **Framework:** Next.js 14
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **UI Components:** Radix UI
+- **Voice Processing:** 
+  - OpenAI(whisper-1 & tts-1)
+  - ElevenLabs
+- **API Integration:** OpenAI-Assistants API
+
+## Prerequisites
+- Node.js 18+ 
+- npm
+- OpenAI API key
+- Vercel/blob
+- ElevenLabs API key(optional)
 
 ## Getting Started
-
-First, run the development server:
-
+1. Install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Create a `.env.local` file in the root directory and add your API keys:
+```
+OPENAI_API_KEY=your_openai_api_key
+ELEVENLABS_API_KEY=your_elevenlabs_api_key
+ASSISTANT_ID=your_assistant_id
+BLOB_READ_WRITE_TOKEN=your_vercel_blob_read_token
+```
+ELEVENLABS_API_KEY is required only when you want to use ELEVENLABS_API for text-to-speech
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+4. Run the development server:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.

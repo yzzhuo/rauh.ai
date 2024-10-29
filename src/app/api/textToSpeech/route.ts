@@ -7,15 +7,22 @@ export const maxDuration = 60;
 
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
 
-const client = new ElevenLabsClient({
-  apiKey: ELEVENLABS_API_KEY,
-});
+let client: null | ElevenLabsClient;
+
+function get_evevenlab_client() {
+  if (!client) {
+    client = new ElevenLabsClient({
+    apiKey: ELEVENLABS_API_KEY,
+  });
+  }
+  return client;
+}
 
 export async function POST(req: Request) {
   const { text } = await req.json();
-  const voice = process.env.VOICE ;
-  
-  if (voice === 'emily') {
+  console.log('sdasd', ELEVENLABS_API_KEY)
+  if (ELEVENLABS_API_KEY) {
+    const client = get_evevenlab_client();
     try {
       const audio = await client.generate({
         voice: "Emily",

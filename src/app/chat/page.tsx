@@ -2,11 +2,11 @@
 import 'regenerator-runtime/runtime'
 import { IconButton, Button } from "@radix-ui/themes";
 import { MessageProps, useVoiceChat } from "../../hooks/useVoiceChat";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Mic, PanelRightClose, PanelLeftClose, MicOff } from "lucide-react";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
-import SmileyFace from "../components/smell-face";
+import CircleAnimation from "../components/circleAnimation";
 
 const DURATION_FOR_END_OF_SPEECH = process.env.NEXT_PUBLIC_LISTENING_WAITING_TIME ? parseInt(process.env.NEXT_PUBLIC_LISTENING_WAITING_TIME) : 3000;
 console.log('DURATION_FOR_END_OF_SPEECH:', DURATION_FOR_END_OF_SPEECH);
@@ -27,8 +27,6 @@ export default function Home() {
   const [speechDetectTimer, setSpeechDetectTimer] = useState<NodeJS.Timeout | null>(null);
   const [isStart, setIsStart] = useState(false);
 
-  // const [dataArray, setDataArray] = useState<Uint8Array>();
-  // 处理音频相关逻辑，主要是自动开启/停止录音
   const [volume, setVolume] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const {
@@ -113,7 +111,7 @@ export default function Home() {
   return (
     <main className="flex h-screen relative">
       <div className="flex flex-auto overflow-hidden flex-col items-center justify-between px-4 py-12 md:p-24">
-        <SmileyFace loading={inputDisabled}/>
+        <CircleAnimation loading={inputDisabled}/>
         {isMobile ? <div className="text-center mb-12">
           <h3 className="font-bold text-2xl">The feature may not work correctly on mobile devices</h3> 
           <p className="my-4">We were unable to connect to your microphone, please use our demo on a PC browser.</p>
@@ -129,19 +127,10 @@ export default function Home() {
           >
             {recording || isStart ? <Mic width="24" height="24" /> : <MicOff width="24" height="24" />}
           </IconButton>
-          {/* <IconButton
-            radius="full"
-            variant="soft"
-            color="red"
-            size="4"
-            onClick={handleClickCancel}
-          >
-            <X width="24" height="24" />
-          </IconButton> */}
+         
         </div>
         }
          {!isMobile && <div className="flex flex-col items-center my-8 gap-4">
-          {/* <Waveform data={dataArray}/> */}
           <p className="md:text-xl text-center"> 
             {recording
               ? "Listening..."
@@ -183,7 +172,6 @@ export default function Home() {
             <span className='font-semibold text-sm'>Send</span>
           </Button>
         </form>
-        {/* <HumeAI /> */}
       </aside>
       }
     </main>
